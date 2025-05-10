@@ -1,4 +1,3 @@
-
 export interface Question {
   id: number;
   text: string;
@@ -106,6 +105,162 @@ export const quizzes: Quiz[] = [
         ],
         correctAnswer: 2,
         explanation: "Le CEERA vise à contribuer activement au développement de sa région d'origine."
+      }
+    ]
+  },
+  {
+    id: 3,
+    title: "Culture et Traditions d'Agnibilékrou",
+    description: "Testez vos connaissances sur le patrimoine culturel de notre région",
+    questions: [
+      {
+        id: 1,
+        text: "Quelle est la principale langue traditionnelle parlée à Agnibilékrou ?",
+        options: ["Baoulé", "Agni", "Malinké", "Bété"],
+        correctAnswer: 1,
+        explanation: "L'Agni est la langue traditionnelle dominante dans la région d'Agnibilékrou."
+      },
+      {
+        id: 2,
+        text: "Quelle fête traditionnelle est la plus importante à Agnibilékrou ?",
+        options: ["Fête des ignames", "Fête du café", "Fête des masques", "Fête de la récolte"],
+        correctAnswer: 0,
+        explanation: "La fête des ignames est une célébration majeure qui marque le début de la nouvelle année agricole."
+      },
+      {
+        id: 3,
+        text: "Quel roi historique a marqué l'histoire d'Agnibilékrou ?",
+        options: ["Roi Amon N'Douffou", "Roi Aka Essien", "Roi Kouassi N'Go", "Roi Kouamé Adingra"],
+        correctAnswer: 2,
+        explanation: "Le roi Kouassi N'Go a joué un rôle crucial dans le développement de la région."
+      },
+      {
+        id: 4,
+        text: "Quelle activité artisanale est réputée à Agnibilékrou ?",
+        options: ["Poterie", "Tissage", "Sculpture sur bois", "Bijouterie"],
+        correctAnswer: 2,
+        explanation: "La sculpture sur bois est un art traditionnel très développé dans la région."
+      },
+      {
+        id: 5,
+        text: "Quel plat traditionnel est emblématique d'Agnibilékrou ?",
+        options: ["Attiéké", "Foutou d'igname", "Placali", "Alloco"],
+        correctAnswer: 1,
+        explanation: "Le foutou d'igname est un plat traditionnel très apprécié dans la région."
+      }
+    ]
+  },
+  {
+    id: 4,
+    title: "Activités et Événements du CEERA",
+    description: "Évaluez votre connaissance des différentes activités organisées par notre association",
+    questions: [
+      {
+        id: 1,
+        text: "Quel événement marque la rentrée académique du CEERA ?",
+        options: [
+          "Assemblée générale", 
+          "Cérémonie d'accueil des nouveaux", 
+          "Conférence de presse", 
+          "Réunion du bureau"
+        ],
+        correctAnswer: 1,
+        explanation: "La cérémonie d'accueil des nouveaux membres est un moment important de la rentrée."
+      },
+      {
+        id: 2,
+        text: "Quelle activité sportive est organisée chaque trimestre ?",
+        options: ["Tournoi de football", "Marathon", "Compétition d'athlétisme", "Tournoi multi-sports"],
+        correctAnswer: 3,
+        explanation: "Le tournoi multi-sports permet de renforcer les liens entre les membres."
+      },
+      {
+        id: 3,
+        text: "Quel type de formation le CEERA propose-t-il régulièrement ?",
+        options: [
+          "Formation en informatique", 
+          "Formation en leadership", 
+          "Formation en langues", 
+          "Formation en cuisine"
+        ],
+        correctAnswer: 1,
+        explanation: "Les formations en leadership visent à développer les compétences des membres."
+      },
+      {
+        id: 4,
+        text: "Quelle action sociale est menée chaque année ?",
+        options: [
+          "Don de sang", 
+          "Distribution de fournitures scolaires", 
+          "Nettoyage des rues", 
+          "Visite d'orphelinats"
+        ],
+        correctAnswer: 1,
+        explanation: "La distribution de fournitures scolaires aide les élèves défavorisés."
+      },
+      {
+        id: 5,
+        text: "Quel concours académique est organisé par le CEERA ?",
+        options: [
+          "Concours de dissertation", 
+          "Olympiades scientifiques", 
+          "Concours d'éloquence", 
+          "Quiz inter-écoles"
+        ],
+        correctAnswer: 2,
+        explanation: "Le concours d'éloquence permet de développer les capacités oratoires des membres."
+      }
+    ]
+  },
+  {
+    id: 5,
+    title: "Structure et Organisation du CEERA",
+    description: "Découvrez l'organisation interne et le fonctionnement de notre association",
+    questions: [
+      {
+        id: 1,
+        text: "Quelle est la durée du mandat du bureau exécutif ?",
+        options: ["1 an", "2 ans", "3 ans", "4 ans"],
+        correctAnswer: 1,
+        explanation: "Le bureau exécutif est élu pour un mandat de 2 ans renouvelable une fois."
+      },
+      {
+        id: 2,
+        text: "Combien de commissions permanentes compte le CEERA ?",
+        options: ["3 commissions", "4 commissions", "5 commissions", "6 commissions"],
+        correctAnswer: 2,
+        explanation: "Le CEERA compte 5 commissions permanentes pour différents domaines d'action."
+      },
+      {
+        id: 3,
+        text: "À quelle fréquence se réunit l'Assemblée Générale ordinaire ?",
+        options: ["Chaque mois", "Chaque trimestre", "Chaque semestre", "Chaque année"],
+        correctAnswer: 1,
+        explanation: "L'Assemblée Générale ordinaire se réunit trimestriellement."
+      },
+      {
+        id: 4,
+        text: "Qui peut devenir membre du CEERA ?",
+        options: [
+          "Uniquement les étudiants", 
+          "Uniquement les élèves", 
+          "Les élèves et étudiants d'Agnibilékrou", 
+          "Tout ressortissant d'Agnibilékrou"
+        ],
+        correctAnswer: 2,
+        explanation: "Le CEERA est ouvert aux élèves et étudiants originaires d'Agnibilékrou."
+      },
+      {
+        id: 5,
+        text: "Comment sont prises les décisions importantes ?",
+        options: [
+          "Par le président seul", 
+          "Par vote en AG", 
+          "Par le bureau exécutif", 
+          "Par consensus"
+        ],
+        correctAnswer: 1,
+        explanation: "Les décisions importantes sont soumises au vote en Assemblée Générale."
       }
     ]
   }
