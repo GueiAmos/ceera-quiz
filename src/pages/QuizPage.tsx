@@ -3,13 +3,13 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { quizzes } from "@/data/quizData";
+import { useQuiz } from "@/hooks/useQuizzes";
 
 const QuizPage = () => {
   const { quizId } = useParams<{ quizId: string }>();
   const navigate = useNavigate();
+  const { data: currentQuiz, isLoading, error } = useQuiz(quizId || '');
   
-  const [currentQuiz, setCurrentQuiz] = useState(quizzes.find(q => q.id === Number(quizId)));
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
@@ -18,10 +18,11 @@ const QuizPage = () => {
   const [userAnswers, setUserAnswers] = useState<number[]>([]);
 
   useEffect(() => {
-    if (!currentQuiz) {
+    if (!isLoading && !currentQuiz && quizId) {
+      console.log('Quiz not found, redirecting...');
       navigate("/quiz-list");
     }
-  }, [currentQuiz, navigate]);
+  }, [currentQuiz, isLoading, quizId, navigate]);
 
   const handleAnswerSelect = (answerIndex: number) => {
     if (!isAnswerSubmitted) {
@@ -49,7 +50,7 @@ const QuizPage = () => {
     if (selectedAnswer !== null) {
       setIsAnswerSubmitted(true);
       
-      if (currentQuiz && selectedAnswer === currentQuiz.questions[currentQuestionIndex].correctAnswer) {
+      if (currentQuiz && selectedAnswer === currentQuiz.questions[currentQuestionIndex].correct_answer) {
         setScore(score + 1);
       }
     }
@@ -64,7 +65,43 @@ const QuizPage = () => {
     setUserAnswers([]);
   };
 
-  if (!currentQuiz) return null;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-grow py-8">
+          <div className="container mx-auto px-4 max-w-3xl">
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ceera-blue"></div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !currentQuiz) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-grow py-8">
+          <div className="container mx-auto px-4 max-w-3xl">
+            <div className="text-center py-12">
+              <p className="text-red-500 mb-4">Quiz non trouvé ou erreur de chargement.</p>
+              <button
+                onClick={() => navigate('/quiz-list')}
+                className="bg-ceera-blue hover:bg-ceera-blue/90 text-white font-medium py-2 px-6 rounded-lg transition-fade"
+              >
+                Retour aux quiz
+              </button>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   const currentQuestion = currentQuiz.questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / currentQuiz.questions.length) * 100;
@@ -104,12 +141,12 @@ const QuizPage = () => {
                     <p className="text-sm">
                       <span className="font-medium">Votre réponse :</span> {
                         userAnswers[index] !== undefined 
-                          ? question.options[userAnswers[index]] 
+                          ? question.question_options[userAnswers[index]]?.option_text || "Sans réponse"
                           : "Sans réponse"
                       }
                     </p>
-                    <p className={`text-sm ${userAnswers[index] === question.correctAnswer ? "text-green-600" : "text-red-600"}`}>
-                      <span className="font-medium">Réponse correcte :</span> {question.options[question.correctAnswer]}
+                    <p className={`text-sm ${userAnswers[index] === question.correct_answer ? "text-green-600" : "text-red-600"}`}>
+                      <span className="font-medium">Réponse correcte :</span> {question.question_options[question.correct_answer]?.option_text}
                     </p>
                     {question.explanation && (
                       <p className="text-sm mt-2 text-gray-600 bg-gray-50 p-2 rounded">
@@ -172,14 +209,14 @@ const QuizPage = () => {
               <h2 className="text-xl font-semibold mb-4">{currentQuestion.text}</h2>
               
               <div className="space-y-3">
-                {currentQuestion.options.map((option, index) => (
+                {currentQuestion.question_options.map((option, index) => (
                   <button
-                    key={index}
+                    key={option.id}
                     onClick={() => handleAnswerSelect(index)}
                     className={`w-full text-left p-4 rounded-lg border transition-all ${
                       selectedAnswer === index 
                         ? isAnswerSubmitted
-                          ? index === currentQuestion.correctAnswer
+                          ? index === currentQuestion.correct_answer
                             ? "bg-green-100 border-green-500"
                             : "bg-red-100 border-red-500"
                           : "bg-ceera-lightBlue border-ceera-blue"
@@ -191,7 +228,7 @@ const QuizPage = () => {
                       <div className={`w-6 h-6 flex items-center justify-center rounded-full mr-3 ${
                         selectedAnswer === index 
                           ? isAnswerSubmitted
-                            ? index === currentQuestion.correctAnswer
+                            ? index === currentQuestion.correct_answer
                               ? "bg-green-500 text-white"
                               : "bg-red-500 text-white"
                             : "bg-ceera-blue text-white"
@@ -199,7 +236,7 @@ const QuizPage = () => {
                       }`}>
                         {String.fromCharCode(65 + index)}
                       </div>
-                      {option}
+                      {option.option_text}
                     </div>
                   </button>
                 ))}

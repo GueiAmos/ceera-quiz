@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import { Quiz } from '@/data/quizData';
+import { Quiz } from '@/hooks/useQuizzes';
 
 interface QuizCardProps {
   quiz: Quiz;
