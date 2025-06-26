@@ -9,78 +9,10 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      question_options: {
-        Row: {
-          created_at: string
-          id: string
-          option_order: number
-          option_text: string
-          question_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          option_order: number
-          option_text: string
-          question_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          option_order?: number
-          option_text?: string
-          question_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "question_options_question_id_fkey"
-            columns: ["question_id"]
-            isOneToOne: false
-            referencedRelation: "questions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      questions: {
-        Row: {
-          correct_answer: number
-          created_at: string
-          explanation: string | null
-          id: string
-          question_order: number
-          quiz_id: string
-          text: string
-        }
-        Insert: {
-          correct_answer: number
-          created_at?: string
-          explanation?: string | null
-          id?: string
-          question_order: number
-          quiz_id: string
-          text: string
-        }
-        Update: {
-          correct_answer?: number
-          created_at?: string
-          explanation?: string | null
-          id?: string
-          question_order?: number
-          quiz_id?: string
-          text?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "questions_quiz_id_fkey"
-            columns: ["quiz_id"]
-            isOneToOne: false
-            referencedRelation: "quizzes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       quizzes: {
         Row: {
+          category_info: string
+          context_data: Json | null
           created_at: string
           description: string
           id: string
@@ -88,6 +20,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category_info?: string
+          context_data?: Json | null
           created_at?: string
           description: string
           id?: string
@@ -95,6 +29,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category_info?: string
+          context_data?: Json | null
           created_at?: string
           description?: string
           id?: string

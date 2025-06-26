@@ -3,12 +3,12 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { useQuiz } from "@/hooks/useQuizzes";
+import { useGenerateQuiz } from "@/hooks/useQuizzes";
 
 const QuizPage = () => {
   const { quizId } = useParams<{ quizId: string }>();
   const navigate = useNavigate();
-  const { data: currentQuiz, isLoading, error } = useQuiz(quizId || '');
+  const { data: currentQuiz, isLoading, error } = useGenerateQuiz(quizId || '');
   
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -63,6 +63,8 @@ const QuizPage = () => {
     setScore(0);
     setQuizCompleted(false);
     setUserAnswers([]);
+    // Force regeneration of questions by refetching
+    window.location.reload();
   };
 
   if (isLoading) {
@@ -71,8 +73,9 @@ const QuizPage = () => {
         <Header />
         <main className="flex-grow py-8">
           <div className="container mx-auto px-4 max-w-3xl">
-            <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ceera-blue"></div>
+            <div className="flex flex-col justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ceera-blue mb-4"></div>
+              <p className="text-ceera-blue font-medium">Génération des questions en cours...</p>
             </div>
           </div>
         </main>
@@ -88,7 +91,7 @@ const QuizPage = () => {
         <main className="flex-grow py-8">
           <div className="container mx-auto px-4 max-w-3xl">
             <div className="text-center py-12">
-              <p className="text-red-500 mb-4">Quiz non trouvé ou erreur de chargement.</p>
+              <p className="text-red-500 mb-4">Erreur lors de la génération du quiz. Veuillez réessayer.</p>
               <button
                 onClick={() => navigate('/quiz-list')}
                 className="bg-ceera-blue hover:bg-ceera-blue/90 text-white font-medium py-2 px-6 rounded-lg transition-fade"
@@ -141,12 +144,12 @@ const QuizPage = () => {
                     <p className="text-sm">
                       <span className="font-medium">Votre réponse :</span> {
                         userAnswers[index] !== undefined 
-                          ? question.question_options[userAnswers[index]]?.option_text || "Sans réponse"
+                          ? question.options[userAnswers[index]]?.option_text || "Sans réponse"
                           : "Sans réponse"
                       }
                     </p>
                     <p className={`text-sm ${userAnswers[index] === question.correct_answer ? "text-green-600" : "text-red-600"}`}>
-                      <span className="font-medium">Réponse correcte :</span> {question.question_options[question.correct_answer]?.option_text}
+                      <span className="font-medium">Réponse correcte :</span> {question.options[question.correct_answer]?.option_text}
                     </p>
                     {question.explanation && (
                       <p className="text-sm mt-2 text-gray-600 bg-gray-50 p-2 rounded">
@@ -162,7 +165,7 @@ const QuizPage = () => {
                   onClick={restartQuiz}
                   className="bg-ceera-orange hover:bg-ceera-orange/90 text-white font-medium py-2 px-6 rounded-lg transition-fade"
                 >
-                  Recommencer ce quiz
+                  Nouvelles questions
                 </button>
                 <button
                   onClick={() => navigate('/quiz-list')}
@@ -209,7 +212,7 @@ const QuizPage = () => {
               <h2 className="text-xl font-semibold mb-4">{currentQuestion.text}</h2>
               
               <div className="space-y-3">
-                {currentQuestion.question_options.map((option, index) => (
+                {currentQuestion.options.map((option, index) => (
                   <button
                     key={option.id}
                     onClick={() => handleAnswerSelect(index)}

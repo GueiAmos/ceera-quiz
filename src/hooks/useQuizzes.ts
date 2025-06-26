@@ -14,13 +14,18 @@ export interface QuizQuestion {
   explanation?: string;
   correct_answer: number;
   question_order: number;
-  question_options: QuizOption[];
+  options: QuizOption[];
 }
 
 export interface Quiz {
   id: string;
   title: string;
   description: string;
+  category_info: string;
+  context_data: any;
+}
+
+export interface GeneratedQuiz extends Quiz {
   questions: QuizQuestion[];
 }
 
@@ -32,23 +37,7 @@ export const useQuizzes = () => {
       
       const { data: quizzesData, error: quizzesError } = await supabase
         .from('quizzes')
-        .select(`
-          id,
-          title,
-          description,
-          questions (
-            id,
-            text,
-            explanation,
-            correct_answer,
-            question_order,
-            question_options (
-              id,
-              option_text,
-              option_order
-            )
-          )
-        `)
+        .select('id, title, description, category_info, context_data')
         .order('created_at');
 
       if (quizzesError) {
@@ -57,61 +46,21 @@ export const useQuizzes = () => {
       }
 
       console.log('Quizzes data from Supabase:', quizzesData);
-
-      // Transform the data to match our interface
-      const transformedQuizzes: Quiz[] = quizzesData?.map((quiz: any) => ({
-        id: quiz.id,
-        title: quiz.title,
-        description: quiz.description,
-        questions: quiz.questions
-          ?.sort((a: any, b: any) => a.question_order - b.question_order)
-          ?.map((question: any) => ({
-            id: question.id,
-            text: question.text,
-            explanation: question.explanation,
-            correct_answer: question.correct_answer,
-            question_order: question.question_order,
-            question_options: question.question_options
-              ?.sort((a: any, b: any) => a.option_order - b.option_order)
-              ?.map((option: any) => ({
-                id: option.id,
-                option_text: option.option_text,
-                option_order: option.option_order,
-              })) || []
-          })) || []
-      })) || [];
-
-      console.log('Transformed quizzes:', transformedQuizzes);
-      return transformedQuizzes;
+      return quizzesData || [];
     },
   });
 };
 
-export const useQuiz = (quizId: string) => {
+export const useGenerateQuiz = (quizId: string) => {
   return useQuery({
-    queryKey: ['quiz', quizId],
-    queryFn: async (): Promise<Quiz | null> => {
-      console.log('Fetching quiz with ID:', quizId);
+    queryKey: ['generated-quiz', quizId],
+    queryFn: async (): Promise<GeneratedQuiz | null> => {
+      console.log('Generating quiz with ID:', quizId);
       
+      // First get the quiz info
       const { data: quizData, error } = await supabase
         .from('quizzes')
-        .select(`
-          id,
-          title,
-          description,
-          questions (
-            id,
-            text,
-            explanation,
-            correct_answer,
-            question_order,
-            question_options (
-              id,
-              option_text,
-              option_order
-            )
-          )
-        `)
+        .select('id, title, description, category_info, context_data')
         .eq('id', quizId)
         .single();
 
@@ -127,32 +76,37 @@ export const useQuiz = (quizId: string) => {
 
       console.log('Quiz data from Supabase:', quizData);
 
-      // Transform the data
-      const transformedQuiz: Quiz = {
+      // Generate questions using the Edge Function
+      const response = await supabase.functions.invoke('generate-quiz-questions', {
+        body: {
+          categoryInfo: quizData.category_info,
+          contextData: quizData.context_data,
+          quizTitle: quizData.title
+        }
+      });
+
+      if (response.error) {
+        console.error('Error generating questions:', response.error);
+        throw new Error('Failed to generate questions');
+      }
+
+      const { questions } = response.data;
+
+      const generatedQuiz: GeneratedQuiz = {
         id: quizData.id,
         title: quizData.title,
         description: quizData.description,
-        questions: quizData.questions
-          ?.sort((a: any, b: any) => a.question_order - b.question_order)
-          ?.map((question: any) => ({
-            id: question.id,
-            text: question.text,
-            explanation: question.explanation,
-            correct_answer: question.correct_answer,
-            question_order: question.question_order,
-            question_options: question.question_options
-              ?.sort((a: any, b: any) => a.option_order - b.option_order)
-              ?.map((option: any) => ({
-                id: option.id,
-                option_text: option.option_text,
-                option_order: option.option_order,
-              })) || []
-          })) || []
+        category_info: quizData.category_info,
+        context_data: quizData.context_data,
+        questions: questions
       };
 
-      console.log('Transformed quiz:', transformedQuiz);
-      return transformedQuiz;
+      console.log('Generated quiz:', generatedQuiz);
+      return generatedQuiz;
     },
     enabled: !!quizId,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 0, // Always generate fresh questions
   });
 };

@@ -13,7 +13,7 @@ const QuizCard = ({ quiz }: QuizCardProps) => {
         <h3 className="text-xl font-bold text-ceera-blue mb-2">{quiz.title}</h3>
         <p className="text-gray-600 mb-4">{quiz.description}</p>
         <div className="text-sm text-gray-500 mb-3">
-          <span>{quiz.questions.length} questions</span>
+          <span>10 questions générées automatiquement</span>
         </div>
       </div>
       
